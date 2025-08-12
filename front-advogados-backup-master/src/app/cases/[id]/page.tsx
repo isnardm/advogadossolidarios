@@ -32,9 +32,11 @@ export default function CaseDetailsPage() {
       if (!token) return;
       try {
         const response = await fetch(`${API_BASE_URL}/causas/${caseId}`, {
+          method: 'GET',
           headers: {
             "Authorization": `Bearer ${token}`,
           },
+          mode: 'cors',
         });
         if (!response.ok) {
           const errorData = await response.json();
