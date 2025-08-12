@@ -11,8 +11,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Loader2, SearchX, Search, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 
 interface CaseListProps {
+  apiEndpoint?: string;
 }
 
 // Interface for the raw data structure from the API
@@ -30,7 +32,7 @@ interface ApiCase {
 }
 
 
-const CaseList: React.FC<CaseListProps> = () => {
+const CaseList: React.FC<CaseListProps> = ({ apiEndpoint = '/causas' }) => {
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +50,7 @@ const CaseList: React.FC<CaseListProps> = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_BASE_URL}/causas`, {
+        const response = await fetch(`${API_BASE_URL}${apiEndpoint}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
@@ -84,10 +86,11 @@ const CaseList: React.FC<CaseListProps> = () => {
     };
 
     fetchCases();
-  }, [token, toast]);
+  }, [token, toast, apiEndpoint]);
 
+  const router = useRouter();
   const handleViewDetails = (caseId: number) => {
-    toast({ title: "Funcionalidade em Desenvolvimento", description: `Detalhes do caso ID ${caseId} serão exibidos em breve.`});
+    router.push(`/cases/${caseId}`);
   };
 
   const filteredCases = cases.filter(caseItem =>
