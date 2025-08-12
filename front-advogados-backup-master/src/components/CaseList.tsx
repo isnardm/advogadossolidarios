@@ -51,9 +51,11 @@ const CaseList: React.FC<CaseListProps> = ({ apiEndpoint = '/causas' }) => {
       setError(null);
       try {
         const response = await fetch(`${API_BASE_URL}${apiEndpoint}`, {
+          method: 'GET',
           headers: {
             "Authorization": `Bearer ${token}`,
           },
+          mode: 'cors',
         });
         if (!response.ok) {
           const errorData = await response.json();
