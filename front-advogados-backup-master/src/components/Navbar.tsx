@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, UserCircle, LogOut, LayoutDashboard, FileText, Briefcase, UserPlus } from 'lucide-react';
+import { ChevronDown, UserCircle, LogOut, LayoutDashboard, FileText, Briefcase, UserPlus, Clock } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -67,9 +67,14 @@ const Navbar = () => {
                 </Link>
               )}
               {user.role === 'ADVOGADO' && (
-                <Link href="/cases" className={`${navItemBaseClasses} ${pathname === '/cases' ? navItemActiveClasses : navItemIdleClasses}`}>
-                  <Briefcase className="inline-block mr-1.5 h-4 w-4" />Ver Casos
-                </Link>
+                <>
+                  <Link href="/cases" className={`${navItemBaseClasses} ${pathname === '/cases' ? navItemActiveClasses : navItemIdleClasses}`}>
+                    <Briefcase className="inline-block mr-1.5 h-4 w-4" />Ver Casos
+                  </Link>
+                  <Link href="/historico" className={`${navItemBaseClasses} ${pathname === '/historico' ? navItemActiveClasses : navItemIdleClasses}`}>
+                    <Clock className="inline-block mr-1.5 h-4 w-4" />Histórico
+                  </Link>
+                </>
               )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

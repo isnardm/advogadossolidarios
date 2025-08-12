@@ -30,6 +30,17 @@ public class CausaController {
         List<CausaResponseDTO> causas = causaService.listarCausas();
         return ResponseEntity.ok(causas);
     }
+
+    @GetMapping("/historico")
+    public ResponseEntity<List<CausaResponseDTO>> listarHistorico() {
+        List<CausaResponseDTO> causas = causaService.listarHistorico();
+        return ResponseEntity.ok(causas);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CausaResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(causaService.buscarPorId(id));
+    }
 }
 
 

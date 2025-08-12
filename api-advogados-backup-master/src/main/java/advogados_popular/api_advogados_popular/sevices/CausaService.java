@@ -52,6 +52,49 @@ public class CausaService {
                 .toList();
     }
 
+    public List<CausaResponseDTO> listarHistorico() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (account.getRole() != Role.ADVOGADO) {
+            throw new RuntimeException("Apenas advogados podem visualizar as causas.");
+        }
+
+        return causaRepository.findByStatusNot(statusCausa.ABERTA).stream()
+                .map(causa -> new CausaResponseDTO(
+                        causa.getId(),
+                        causa.getTitulo(),
+                        causa.getDescricao(),
+                        causa.getUsuario().getNome(),
+                        causa.getStatus()
+                ))
+                .toList();
+    }
+
+    public CausaResponseDTO buscarPorId(Long id) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (account.getRole() != Role.ADVOGADO) {
+            throw new RuntimeException("Apenas advogados podem visualizar as causas.");
+        }
+
+        Causa causa = causaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Causa não encontrada."));
+
+        return new CausaResponseDTO(
+                causa.getId(),
+                causa.getTitulo(),
+                causa.getDescricao(),
+                causa.getUsuario().getNome(),
+                causa.getStatus()
+        );
+    }
+
     public CausaResponseDTO cadastrar(CausaRequestDTO dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
