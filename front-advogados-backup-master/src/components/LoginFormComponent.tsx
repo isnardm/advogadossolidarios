@@ -75,10 +75,11 @@ export function LoginFormComponent() {
       }
 
       const userData = {
-        name: result.nome || result.name || (result.user ? result.user.name : "Usuário"), 
+        name: result.nome || result.name ||
+              (result.user ? result.user.name : (userRole === 'ADVOGADO' ? 'Advogado' : 'Usuário')),
         email: result.email || (result.user ? result.user.email : data.email),
         role: userRole,
-        oab: result.oab || (result.user ? result.user.oab : undefined), 
+        oab: result.oab || (result.user ? result.user.oab : undefined),
       };
 
       // If user is USUARIO, attempt to create a default case
