@@ -32,6 +32,7 @@ public class Causa {
     @JoinColumn(name = "advogado_id")
     private Advogado advogadoAtribuido;
 
+    @Enumerated(EnumType.STRING)
     private statusCausa status;
 
     @OneToMany(mappedBy = "causa")

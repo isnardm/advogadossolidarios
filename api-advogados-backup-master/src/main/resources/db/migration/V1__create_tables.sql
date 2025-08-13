@@ -37,16 +37,22 @@ CREATE TABLE lances (
                         advogado_id BIGINT NOT NULL,
                         causa_id BIGINT NOT NULL,
                         valor DECIMAL(10,2) NOT NULL,
-                        status ENUM('PENDENTE', 'ACEITO', 'NEGOCIANDO') NOT NULL,
                         FOREIGN KEY (advogado_id) REFERENCES advogados(id) ON DELETE CASCADE,
                         FOREIGN KEY (causa_id) REFERENCES causas(id) ON DELETE CASCADE
 );
 
+CREATE TABLE chat (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        lance_id BIGINT NOT NULL,
+                        proposta_aceita BOOLEAN NOT NULL DEFAULT FALSE,
+                        FOREIGN KEY (lance_id) REFERENCES lances(id) ON DELETE CASCADE
+);
+
 CREATE TABLE mensagens (
                            id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                           lance_id BIGINT NOT NULL,
+                           chat_id BIGINT NOT NULL,
+                           conteudo TEXT NOT NULL,
+                           enviada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                            remetente ENUM('USUARIO', 'ADVOGADO') NOT NULL,
-                           mensagem TEXT NOT NULL,
-                           data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                           FOREIGN KEY (lance_id) REFERENCES lances(id) ON DELETE CASCADE
+                           FOREIGN KEY (chat_id) REFERENCES chat(id) ON DELETE CASCADE
 );
