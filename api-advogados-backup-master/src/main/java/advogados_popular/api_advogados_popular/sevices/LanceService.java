@@ -2,7 +2,9 @@ package advogados_popular.api_advogados_popular.sevices;
 
 import advogados_popular.api_advogados_popular.DTOs.Lance.LanceRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.Lance.LanceResponseDTO;
+import advogados_popular.api_advogados_popular.DTOs.Lance.LancePendenteResponseDTO;
 import advogados_popular.api_advogados_popular.DTOs.utils.Role;
+import advogados_popular.api_advogados_popular.DTOs.statusCausa;
 import advogados_popular.api_advogados_popular.Entitys.*;
 import advogados_popular.api_advogados_popular.Repositorys.*;
 import org.springframework.http.HttpStatus;
@@ -20,15 +22,18 @@ public class LanceService {
     private final CausaRepository causaRepository;
     private final AdvogadoRepository advogadoRepository;
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
     public LanceService(LanceRepository lanceRepository,
                         CausaRepository causaRepository,
                         AdvogadoRepository advogadoRepository,
-                        AccountRepository accountRepository) {
+                        AccountRepository accountRepository,
+                        UserRepository userRepository) {
         this.lanceRepository = lanceRepository;
         this.causaRepository = causaRepository;
         this.advogadoRepository = advogadoRepository;
         this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
     }
 
     public LanceResponseDTO criarLance(LanceRequestDTO dto) {
@@ -64,6 +69,68 @@ public class LanceService {
             chat.setMensagens(List.of(mensagem));
         }
         lance.setChat(chat);
+
+        Lance salvo = lanceRepository.save(lance);
+
+        return new LanceResponseDTO(
+                salvo.getId(),
+                salvo.getValor(),
+                salvo.getCausa().getId(),
+                salvo.getAdvogado().getId(),
+                salvo.getChat().getId()
+        );
+    }
+
+    public List<LancePendenteResponseDTO> listarPendentesUsuario() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
+
+        if (account.getRole() != Role.USUARIO) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas usuários podem visualizar lances pendentes.");
+        }
+
+        User usuario = userRepository.findByAccount(account)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        return lanceRepository.findByCausa_Usuario_IdAndChat_PropostaAceitaFalse(usuario.getId()).stream()
+                .map(l -> new LancePendenteResponseDTO(
+                        l.getId(),
+                        l.getValor(),
+                        l.getCausa().getId(),
+                        l.getCausa().getTitulo(),
+                        l.getAdvogado().getId(),
+                        l.getAdvogado().getNome()))
+                .toList();
+    }
+
+    public LanceResponseDTO aprovarLance(Long lanceId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
+
+        if (account.getRole() != Role.USUARIO) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas usuários podem aprovar lances.");
+        }
+
+        User usuario = userRepository.findByAccount(account)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        Lance lance = lanceRepository.findById(lanceId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lance não encontrado"));
+
+        if (!lance.getCausa().getUsuario().getId().equals(usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Lance não pertence a um caso do usuário.");
+        }
+
+        Chat chat = lance.getChat();
+        chat.setPropostaAceita(true);
+
+        Causa causa = lance.getCausa();
+        causa.setStatus(statusCausa.NEGOCIANDO);
+        causaRepository.save(causa);
 
         Lance salvo = lanceRepository.save(lance);
 
