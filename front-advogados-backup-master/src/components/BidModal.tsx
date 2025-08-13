@@ -33,13 +33,13 @@ export default function BidModal({ caseId, open, onOpenChange }: BidModalProps) 
       return;
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/causas/${caseId}/lances`, {
+      const response = await fetch(`${API_BASE_URL}/lances`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ valor: parseFloat(value), comentario: comment })
+        body: JSON.stringify({ causaId: caseId, valor: parseFloat(value) })
       });
       if (!response.ok) {
         throw new Error('Falha ao enviar o lance');
