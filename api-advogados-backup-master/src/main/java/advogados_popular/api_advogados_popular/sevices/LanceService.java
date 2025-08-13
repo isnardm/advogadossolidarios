@@ -5,8 +5,10 @@ import advogados_popular.api_advogados_popular.DTOs.Lance.LanceResponseDTO;
 import advogados_popular.api_advogados_popular.DTOs.utils.Role;
 import advogados_popular.api_advogados_popular.Entitys.*;
 import advogados_popular.api_advogados_popular.Repositorys.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,17 +35,17 @@ public class LanceService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
 
         if (account.getRole() != Role.ADVOGADO) {
-            throw new RuntimeException("Apenas advogados podem enviar lances.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas advogados podem enviar lances.");
         }
 
-        Advogado advogado = advogadoRepository.findByAccount(account)
-                .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
+        Advogado advogado = advogadoRepository.findByAccountEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Advogado não encontrado"));
 
         Causa causa = causaRepository.findById(dto.causaId())
-                .orElseThrow(() -> new RuntimeException("Causa não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Causa não encontrada"));
 
         Lance lance = new Lance();
         lance.setValor(dto.valor());
