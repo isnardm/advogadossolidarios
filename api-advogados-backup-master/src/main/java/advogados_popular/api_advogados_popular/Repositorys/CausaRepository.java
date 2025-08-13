@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface CausaRepository extends JpaRepository<Causa, Long> {
     List<Causa> findByStatusNot(statusCausa status);
+
+    List<Causa> findByLances_Advogado_IdAndLances_Chat_PropostaAceitaTrue(Long advogadoId);
 }

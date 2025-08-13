@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FileText, Briefcase, User, AlertTriangle, Loader2, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import CaseList from '@/components/CaseList'; // Import CaseList
+import PendingBidsList from '@/components/PendingBidsList';
 
 export default function DashboardPage() {
   const { user, isLoading, isAuthenticated } = useAuthRedirect({ requiredAuth: true });
@@ -51,6 +52,7 @@ export default function DashboardPage() {
       </Card>
 
       {user.role === 'USUARIO' && (
+        <>
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           <Card className="bg-card rounded-xl shadow-card-modern hover:shadow-card-modern-hover transition-all duration-300 ease-in-out transform hover:-translate-y-1">
             <CardHeader className="p-6">
@@ -89,8 +91,12 @@ export default function DashboardPage() {
                 Acreditamos no poder da colaboração para promover o acesso à justiça. Advogados Solidários é uma plataforma que une pessoas que precisam de orientação legal com advogados dispostos a oferecer seu tempo e conhecimento de forma voluntária. Juntos, construímos uma sociedade mais justa e igualitária.
               </p>
             </CardContent>
-          </Card>
+        </Card>
         </div>
+        <div className="mt-8">
+          <PendingBidsList />
+        </div>
+        </>
       )}
 
       {user.role === 'ADVOGADO' && (
