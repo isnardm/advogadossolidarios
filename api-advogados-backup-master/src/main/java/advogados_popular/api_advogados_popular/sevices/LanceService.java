@@ -41,7 +41,7 @@ public class LanceService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas advogados podem enviar lances.");
         }
 
-        Advogado advogado = advogadoRepository.findByAccountEmail(email)
+        Advogado advogado = advogadoRepository.findByAccount(account)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Advogado não encontrado"));
 
         Causa causa = causaRepository.findById(dto.causaId())
