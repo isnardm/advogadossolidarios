@@ -149,7 +149,7 @@ export function LoginFormComponent() {
             <FormItem>
               <FormLabel>E-mail</FormLabel>
               <FormControl>
-                <Input placeholder="seuemail@exemplo.com" {...field} />
+                <Input placeholder="seuemail@exemplo.com" autoComplete="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -163,7 +163,12 @@ export function LoginFormComponent() {
               <FormLabel>Senha</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input type={showPassword ? "text" : "password"} placeholder="Sua senha" {...field} />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Sua senha"
+                    autoComplete="current-password"
+                    {...field}
+                  />
                   <Button
                     type="button"
                     variant="ghost"
