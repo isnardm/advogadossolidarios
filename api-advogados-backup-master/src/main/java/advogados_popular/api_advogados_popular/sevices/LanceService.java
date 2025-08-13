@@ -8,6 +8,9 @@ import advogados_popular.api_advogados_popular.Repositorys.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class LanceService {
 
@@ -50,6 +53,14 @@ public class LanceService {
         Chat chat = new Chat();
         chat.setLance(lance);
         chat.setPropostaAceita(false);
+        if (dto.comentario() != null && !dto.comentario().isBlank()) {
+            Mensagem mensagem = new Mensagem();
+            mensagem.setChat(chat);
+            mensagem.setConteudo(dto.comentario());
+            mensagem.setEnviadaEm(LocalDateTime.now());
+            mensagem.setRemetente("ADVOGADO");
+            chat.setMensagens(List.of(mensagem));
+        }
         lance.setChat(chat);
 
         Lance salvo = lanceRepository.save(lance);
