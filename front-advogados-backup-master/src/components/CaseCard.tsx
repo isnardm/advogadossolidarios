@@ -1,8 +1,9 @@
 
-import type React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, CalendarDays, UserCircle, ArrowRight } from 'lucide-react';
+import BidModal from '@/components/BidModal';
 
 export interface Case {
   id: number;
@@ -21,6 +22,7 @@ interface CaseCardProps {
 }
 
 const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails }) => {
+  const [bidOpen, setBidOpen] = useState(false);
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Data não informada';
     try {
@@ -64,17 +66,27 @@ const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails }) => {
       </CardContent>
       <CardFooter className="p-4 border-t border-border bg-muted/30">
         {onViewDetails ? (
-          <Button 
-            variant="outline" 
-            className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground focus:ring-primary group transition-all duration-200"
-            onClick={() => onViewDetails(caseData.id)}
-            aria-label={`Ver detalhes do caso ${caseData.title}`}
-          >
-            Ver Detalhes <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-transform"/>
-          </Button>
+          <div className="flex flex-col w-full space-y-2">
+            <Button
+              variant="outline"
+              className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground focus:ring-primary group transition-all duration-200"
+              onClick={() => onViewDetails(caseData.id)}
+              aria-label={`Ver detalhes do caso ${caseData.title}`}
+            >
+              Ver Detalhes <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-transform"/>
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => setBidOpen(true)}
+            >
+              Dar Lance
+            </Button>
+          </div>
         ) : (
            <p className="text-xs text-muted-foreground italic w-full text-center">Mais ações em breve</p>
         )}
+        <BidModal caseId={caseData.id} open={bidOpen} onOpenChange={setBidOpen} />
       </CardFooter>
     </Card>
   );
