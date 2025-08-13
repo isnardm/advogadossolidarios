@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -39,11 +41,18 @@ export default function BidModal({ caseId, open, onOpenChange }: BidModalProps) 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ causaId: caseId, valor: parseFloat(value) })
+        body: JSON.stringify({
+          causaId: caseId,
+          valor: parseFloat(value),
+          comentario: comment,
+        })
       });
+
       if (!response.ok) {
-        throw new Error('Falha ao enviar o lance');
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || 'Falha ao enviar o lance');
       }
+
       toast({ title: 'Lance enviado', description: 'Seu lance foi registrado com sucesso.' });
       setComment('');
       setValue('');
@@ -58,6 +67,7 @@ export default function BidModal({ caseId, open, onOpenChange }: BidModalProps) 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Dar Lance</DialogTitle>
+          <DialogDescription>Informe o valor e um comentário sobre o lance.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Textarea
@@ -65,12 +75,14 @@ export default function BidModal({ caseId, open, onOpenChange }: BidModalProps) 
             value={comment}
             maxLength={200}
             onChange={(e) => setComment(e.target.value)}
+            autoComplete="off"
             required
           />
           <Input
             placeholder="Valor"
             value={value}
             onChange={handleValueChange}
+            autoComplete="off"
             required
           />
           <DialogFooter>
