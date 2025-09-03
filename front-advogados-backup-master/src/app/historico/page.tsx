@@ -1,6 +1,7 @@
 "use client";
 
 import CaseList from '@/components/CaseList';
+import BidHistoryList from '@/components/BidHistoryList';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, AlertTriangle, Loader2 } from 'lucide-react';
@@ -49,6 +50,9 @@ export default function HistoricoPage() {
         </CardHeader>
       </Card>
       <CaseList apiEndpoint="/causas/historico" />
+      <div className="mt-8">
+        <BidHistoryList />
+      </div>
     </div>
   );
 }

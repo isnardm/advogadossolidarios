@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import advogados_popular.api_advogados_popular.DTOs.statusProposta;
 
 // Chat.java
 @Entity
@@ -27,5 +28,6 @@ public class Chat {
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Mensagem> mensagens;
 
-    private boolean propostaAceita;
+    @Enumerated(EnumType.STRING)
+    private statusProposta status;
 }

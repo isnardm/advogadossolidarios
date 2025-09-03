@@ -6,6 +6,7 @@ import advogados_popular.api_advogados_popular.DTOs.utils.Role;
 import advogados_popular.api_advogados_popular.Entitys.Account;
 import advogados_popular.api_advogados_popular.Entitys.Chat;
 import advogados_popular.api_advogados_popular.Entitys.Mensagem;
+import advogados_popular.api_advogados_popular.DTOs.statusProposta;
 import advogados_popular.api_advogados_popular.Repositorys.AccountRepository;
 import advogados_popular.api_advogados_popular.Repositorys.ChatRepository;
 import advogados_popular.api_advogados_popular.Repositorys.MensagemRepository;
@@ -43,6 +44,10 @@ public class ChatService {
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new RuntimeException("Chat não encontrado"));
 
+        if (chat.getStatus() != statusProposta.APROVADA) {
+            throw new RuntimeException("Chat não disponível");
+        }
+
         Mensagem mensagem = new Mensagem();
         mensagem.setChat(chat);
         mensagem.setConteudo(dto.conteudo());
@@ -64,6 +69,13 @@ public class ChatService {
     }
 
     public List<MensagemResponseDTO> listarMensagens(Long chatId) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new RuntimeException("Chat não encontrado"));
+
+        if (chat.getStatus() != statusProposta.APROVADA) {
+            throw new RuntimeException("Chat não disponível");
+        }
+
         return mensagemRepository.findByChatId(chatId).stream()
                 .map(m -> new MensagemResponseDTO(
                         m.getId(),
