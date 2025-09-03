@@ -28,5 +28,15 @@ cy.get('.border.bg-card.rounded-xl') // pega os cards
   .within(() => {
     cy.contains('button', 'Aprovar').click()
   })
+
+        // 1. Clicar no botão do usuário (dropdown)
+cy.get('button[id^="radix-"]') // o id parece dinâmico, mas sempre começa com radix-
+  .should('be.visible')
+  .click()
+
+// 2. Esperar o dropdown abrir e clicar em "Sair"
+cy.contains('div[role="menuitem"]', 'Sair')
+  .should('be.visible')
+  .click()
  })
     })

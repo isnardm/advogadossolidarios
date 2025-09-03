@@ -35,7 +35,15 @@ cy.get('.border.bg-card.rounded-xl')         // pega os cards de histórico
       .should('contain.text', '150.66') // se na UI for com vírgula, troque para '150,66'
   })
 
+      // 1. Clicar no botão do usuário (dropdown)
+cy.get('button[id^="radix-"]') // o id parece dinâmico, mas sempre começa com radix-
+  .should('be.visible')
+  .click()
 
+// 2. Esperar o dropdown abrir e clicar em "Sair"
+cy.contains('div[role="menuitem"]', 'Sair')
+  .should('be.visible')
+  .click()
 
 
       })

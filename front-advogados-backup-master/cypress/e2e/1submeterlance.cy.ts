@@ -33,6 +33,20 @@ describe('Submeter Lance', () => {
     // 8. Clicar em submeter caso.
     cy.contains('button', 'Enviar Caso').click()
 
+    // 1. Clicar no botão do usuário (dropdown)
+cy.get('button[id^="radix-"]') // o id parece dinâmico, mas sempre começa com radix-
+  .should('be.visible')
+  .click()
+
+// 2. Esperar o dropdown abrir e clicar em "Sair"
+cy.contains('div[role="menuitem"]', 'Sair')
+  .should('be.visible')
+  .click()
+
+// 3. (Opcional) Validar que foi para a tela de login
+cy.url().should('include', '/login')
+
+
 
   })
 })

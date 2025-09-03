@@ -47,6 +47,16 @@ cy.contains('button', 'Enviar Lance')
 cy.contains('div', 'Seu lance foi registrado com sucesso.')
   .should('be.visible')
 
+      // 1. Clicar no botão do usuário (dropdown)
+cy.get('button[id^="radix-"]') // o id parece dinâmico, mas sempre começa com radix-
+  .should('be.visible')
+  .click()
+
+// 2. Esperar o dropdown abrir e clicar em "Sair"
+cy.contains('div[role="menuitem"]', 'Sair')
+  .should('be.visible')
+  .click()
+
 
   })
 })
