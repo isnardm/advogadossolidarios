@@ -3,6 +3,7 @@ package advogados_popular.api_advogados_popular.sevices;
 import advogados_popular.api_advogados_popular.DTOs.Causa.CausaRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.Causa.CausaResponseDTO;
 import advogados_popular.api_advogados_popular.DTOs.statusCausa;
+import advogados_popular.api_advogados_popular.DTOs.statusProposta;
 import advogados_popular.api_advogados_popular.DTOs.utils.Role;
 import advogados_popular.api_advogados_popular.Entitys.Account;
 import advogados_popular.api_advogados_popular.Entitys.Advogado;
@@ -70,7 +71,7 @@ public class CausaService {
         Advogado advogado = advogadoRepository.findByAccount(account)
                 .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
 
-        return causaRepository.findByLances_Advogado_IdAndLances_Chat_PropostaAceitaTrue(advogado.getId()).stream()
+        return causaRepository.findByLances_Advogado_IdAndLances_Chat_Status(advogado.getId(), statusProposta.APROVADA).stream()
                 .map(causa -> new CausaResponseDTO(
                         causa.getId(),
                         causa.getTitulo(),
