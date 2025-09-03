@@ -13,9 +13,10 @@ interface BidModalProps {
   caseId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onBidSubmitted?: () => void;
 }
 
-export default function BidModal({ caseId, open, onOpenChange }: BidModalProps) {
+export default function BidModal({ caseId, open, onOpenChange, onBidSubmitted }: BidModalProps) {
   const { token } = useAuth();
   const { toast } = useToast();
   const [comment, setComment] = useState('');
@@ -57,6 +58,7 @@ export default function BidModal({ caseId, open, onOpenChange }: BidModalProps) 
       setComment('');
       setValue('');
       onOpenChange(false);
+      onBidSubmitted?.();
     } catch (err: any) {
       toast({ variant: 'destructive', title: 'Erro', description: err.message });
     }

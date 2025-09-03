@@ -19,9 +19,11 @@ export interface Case {
 interface CaseCardProps {
   caseData: Case;
   onViewDetails?: (caseId: number) => void;
+  onBidSubmitted?: (caseId: number) => void;
+  showBidButton?: boolean;
 }
 
-const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails }) => {
+const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails, onBidSubmitted, showBidButton = true }) => {
   const [bidOpen, setBidOpen] = useState(false);
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Data não informada';
@@ -75,18 +77,25 @@ const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails }) => {
             >
               Ver Detalhes <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-transform"/>
             </Button>
-            <Button
-              variant="secondary"
-              className="w-full"
-              onClick={() => setBidOpen(true)}
-            >
-              Dar Lance
-            </Button>
+            {showBidButton && (
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() => setBidOpen(true)}
+              >
+                Dar Lance
+              </Button>
+            )}
           </div>
         ) : (
            <p className="text-xs text-muted-foreground italic w-full text-center">Mais ações em breve</p>
         )}
-        <BidModal caseId={caseData.id} open={bidOpen} onOpenChange={setBidOpen} />
+        <BidModal
+          caseId={caseData.id}
+          open={bidOpen}
+          onOpenChange={setBidOpen}
+          onBidSubmitted={() => onBidSubmitted?.(caseData.id)}
+        />
       </CardFooter>
     </Card>
   );

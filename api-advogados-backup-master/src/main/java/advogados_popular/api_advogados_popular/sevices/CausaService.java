@@ -47,7 +47,13 @@ public class CausaService {
             throw new RuntimeException("Apenas advogados podem visualizar as causas.");
         }
 
+        Advogado advogado = advogadoRepository.findByAccount(account)
+                .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
+
         return causaRepository.findAll().stream()
+                // Exibe apenas causas em que o advogado ainda não deu lance
+                .filter(causa -> causa.getLances().stream()
+                        .noneMatch(l -> l.getAdvogado().getId().equals(advogado.getId())))
                 .map(causa -> new CausaResponseDTO(
                         causa.getId(),
                         causa.getTitulo(),
@@ -71,7 +77,10 @@ public class CausaService {
         Advogado advogado = advogadoRepository.findByAccount(account)
                 .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
 
-        return causaRepository.findByLances_Advogado_IdAndLances_Chat_Status(advogado.getId(), statusProposta.APROVADA).stream()
+        return causaRepository.findAll().stream()
+                // Inclui apenas causas com lances do advogado
+                .filter(causa -> causa.getLances().stream()
+                        .anyMatch(l -> l.getAdvogado().getId().equals(advogado.getId())))
                 .map(causa -> new CausaResponseDTO(
                         causa.getId(),
                         causa.getTitulo(),
