@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface LanceRepository extends JpaRepository<Lance, Long> {
-    List<Lance> findByCausa_Usuario_IdAndChat_PropostaAceitaFalse(Long usuarioId);
+    List<Lance> findByCausa_Usuario_Id(Long usuarioId);
+    List<Lance> findByAdvogado_Id(Long advogadoId);
 }
 

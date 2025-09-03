@@ -15,13 +15,7 @@ interface PendingBid {
   causaTitulo: string;
   advogadoId: number;
   advogadoNome: string;
-}
-
-interface LanceResponse {
-  id: number;
-  valor: number;
-  causaId: number;
-  advogadoId: number;
+  status: string;
   chatId: number;
 }
 
@@ -36,10 +30,10 @@ export default function PendingBidsList() {
     const fetchBids = async () => {
       if (!token) return;
       try {
-        const res = await fetch(`${API_BASE_URL}/lances/pendentes`, {
+        const res = await fetch(`${API_BASE_URL}/lances/recebidas`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error('Erro ao carregar lances pendentes');
+        if (!res.ok) throw new Error('Erro ao carregar propostas');
         const data: PendingBid[] = await res.json();
         setBids(data);
       } catch (err: any) {
@@ -51,6 +45,7 @@ export default function PendingBidsList() {
 
   const handleApprove = async (id: number) => {
     if (!token) return;
+    if (!window.confirm('Deseja aprovar esta proposta?')) return;
     try {
       const res = await fetch(`${API_BASE_URL}/lances/${id}/aprovar`, {
         method: 'POST',
@@ -58,13 +53,30 @@ export default function PendingBidsList() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || 'Falha ao aprovar o lance');
+        throw new Error(data.message || 'Falha ao aprovar a proposta');
       }
-      const data: LanceResponse = await res.json();
-      setBids(prev => prev.filter(b => b.id !== id));
-      setChatId(data.chatId);
-      setChatOpen(true);
-      toast({ title: 'Lance aprovado', description: 'Chat iniciado com o advogado.' });
+      const data: { chatId: number } = await res.json();
+      setBids(prev => prev.map(b => b.id === id ? { ...b, status: 'APROVADA', chatId: data.chatId } : b));
+      toast({ title: 'Proposta aprovada' });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'Erro', description: err.message });
+    }
+  };
+
+  const handleReject = async (id: number) => {
+    if (!token) return;
+    if (!window.confirm('Deseja recusar esta proposta?')) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/lances/${id}/recusar`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || 'Falha ao recusar a proposta');
+      }
+      setBids(prev => prev.map(b => b.id === id ? { ...b, status: 'RECUSADA' } : b));
+      toast({ title: 'Proposta recusada' });
     } catch (err: any) {
       toast({ variant: 'destructive', title: 'Erro', description: err.message });
     }
@@ -83,9 +95,18 @@ export default function PendingBidsList() {
           <CardContent className="text-sm space-y-1">
             <p><strong>Advogado:</strong> {bid.advogadoNome}</p>
             <p><strong>Valor:</strong> R$ {bid.valor.toFixed(2)}</p>
+            <p><strong>Status:</strong> {bid.status}</p>
           </CardContent>
-          <CardFooter>
-            <Button onClick={() => handleApprove(bid.id)}>Aprovar</Button>
+          <CardFooter className="space-x-2">
+            {bid.status === 'PENDENTE' && (
+              <>
+                <Button onClick={() => handleApprove(bid.id)}>Aprovar</Button>
+                <Button variant="destructive" onClick={() => handleReject(bid.id)}>Recusar</Button>
+              </>
+            )}
+            {bid.status === 'APROVADA' && (
+              <Button onClick={() => { setChatId(bid.chatId); setChatOpen(true); }}>Chat</Button>
+            )}
           </CardFooter>
         </Card>
       ))}
