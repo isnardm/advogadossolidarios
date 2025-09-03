@@ -49,7 +49,7 @@ export default function HistoricoPage() {
           </div>
         </CardHeader>
       </Card>
-      <CaseList apiEndpoint="/causas/historico" />
+      <CaseList apiEndpoint="/causas/historico" showBidButton={false} />
       <div className="mt-8">
         <BidHistoryList />
       </div>

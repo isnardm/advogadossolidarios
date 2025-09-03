@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 
 interface CaseListProps {
   apiEndpoint?: string;
+  showBidButton?: boolean;
 }
 
 // Interface for the raw data structure from the API
@@ -32,7 +33,7 @@ interface ApiCase {
 }
 
 
-const CaseList: React.FC<CaseListProps> = ({ apiEndpoint = '/causas' }) => {
+const CaseList: React.FC<CaseListProps> = ({ apiEndpoint = '/causas', showBidButton = true }) => {
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -93,6 +94,10 @@ const CaseList: React.FC<CaseListProps> = ({ apiEndpoint = '/causas' }) => {
   const router = useRouter();
   const handleViewDetails = (caseId: number) => {
     router.push(`/cases/${caseId}`);
+  };
+
+  const handleBidSubmitted = (caseId: number) => {
+    setCases(prev => prev.filter(c => c.id !== caseId));
   };
 
   const filteredCases = cases.filter(caseItem =>
@@ -157,7 +162,13 @@ const CaseList: React.FC<CaseListProps> = ({ apiEndpoint = '/causas' }) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
           {filteredCases.map((caseItem) => (
-            <CaseCard key={caseItem.id} caseData={caseItem} onViewDetails={handleViewDetails} />
+            <CaseCard
+              key={caseItem.id}
+              caseData={caseItem}
+              onViewDetails={handleViewDetails}
+              onBidSubmitted={handleBidSubmitted}
+              showBidButton={showBidButton}
+            />
           ))}
         </div>
       )}
